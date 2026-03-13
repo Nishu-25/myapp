@@ -1,30 +1,47 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:myapp/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Calculator app renders correctly', (WidgetTester tester) async {
+    await tester.pumpWidget(const CalculatorApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Display starts at 0
+    expect(find.text('0'), findsWidgets);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    // Key buttons are present
+    expect(find.text('C'), findsOneWidget);
+    expect(find.text('='), findsOneWidget);
+    expect(find.text('+'), findsOneWidget);
+    expect(find.text('÷'), findsOneWidget);
+  });
+
+  testWidgets('Calculator digit input works', (WidgetTester tester) async {
+    await tester.pumpWidget(const CalculatorApp());
+
+    // Tap 5 then 3 using the button with the exact label
+    await tester.tap(find.text('5').first);
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await tester.tap(find.text('3').first);
+    await tester.pump();
+
+    // The display should show 53. It uses FittedBox with a larger font.
+    expect(find.text('53'), findsOneWidget);
+  });
+
+  testWidgets('Calculator clear button resets display', (WidgetTester tester) async {
+    await tester.pumpWidget(const CalculatorApp());
+
+    // Tap the '7' button (first occurrence is the button in the grid)
+    await tester.tap(find.text('7').first);
+    await tester.pump();
+
+    // Tap C to clear
+    await tester.tap(find.text('C'));
+    await tester.pump();
+
+    // Display should be back to 0
+    expect(find.text('0'), findsWidgets);
   });
 }
